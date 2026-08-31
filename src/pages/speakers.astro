@@ -1,0 +1,24 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import PageTitle from "../components/PageTitle.astro";
+import SpeakerCard from "../components/SpeakerCard.astro";
+
+const speakers = (await getCollection("speakers")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<Layout title="Speakers" description="Meet the speakers of the Jaipur Photojournalism Seminar.">
+  <PageTitle
+    title="Meet Our Speakers"
+    subtitle="Discover our industry experts and thought leaders, delivering insights that inspire and empower at our events."
+  />
+  <section class="container-page py-16">
+    <div class="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-4">
+      {speakers.map((s) => (
+        <SpeakerCard name={s.data.name} role={s.data.role} image={s.data.image} href={`/speakers/${s.id}`} />
+      ))}
+    </div>
+  </section>
+</Layout>

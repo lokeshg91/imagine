@@ -1,0 +1,225 @@
+---
+import { getCollection } from "astro:content";
+import { Image, getImage } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import SpeakerCard from "../components/SpeakerCard.astro";
+import Gallery from "../components/Gallery.tsx";
+import HeroSlider from "../components/HeroSlider.astro";
+import { asset } from "../lib/images";
+import { site, event } from "../data/site";
+import heroWebBanner from "../assets/hero/web-banner-2026.png";
+import heroSlide1 from "../assets/hero/slide-1.jpg";
+import heroSlide2 from "../assets/hero/slide-2.jpg";
+import heroSlide3 from "../assets/hero/slide-3.jpg";
+import heroSlide4 from "../assets/hero/slide-4.jpg";
+import heroSlide5 from "../assets/hero/slide-5.jpg";
+import heroSlide6 from "../assets/hero/slide-6.jpg";
+import heroSlide7 from "../assets/hero/slide-7.png";
+
+// Slides 3–8 feature a named contributor; captioned in the slider.
+const heroSlideCaptions = [
+  undefined,
+  undefined,
+  "Vipul Mudgal",
+  "Siddharth Varadarajan",
+  "Bandeep Singh",
+  "Rohit Parihar",
+  "Prashant Panjiar",
+  "Purushottam Diwakar",
+];
+
+const heroSlides = [
+  heroWebBanner,
+  heroSlide1,
+  heroSlide2,
+  heroSlide3,
+  heroSlide4,
+  heroSlide5,
+  heroSlide6,
+  heroSlide7,
+].map((image, i) => ({
+  image,
+  alt: `${event.edition} — ${event.title}, slide ${i + 1}`,
+  caption: heroSlideCaptions[i],
+}));
+
+// --- Data ---------------------------------------------------------------
+const speakers = (await getCollection("speakers"))
+  .filter((s) => s.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const magazines = (await getCollection("magazines"))
+  .sort((a, b) => +new Date(b.data.publishedDate) - +new Date(a.data.publishedDate))
+  .slice(0, 3);
+
+const posts = (await getCollection("blog"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => +b.data.publishedDate - +a.data.publishedDate)
+  .slice(0, 3);
+
+const sponsors = await getCollection("sponsors");
+
+// Gallery: optimize each image with Astro, then hand plain URLs to the React island.
+const gallerySources = [
+  "gallery/AFMJ0323-1030x687.png",
+  "gallery/AFMJ9693-1030x687.png",
+  "gallery/AFMJ9795-1030x687.png",
+  "gallery/AFMJ0433-1030x687.png",
+  ...Array.from({ length: 37 }, (_, i) => {
+    const n = i + 1;
+    const ext = (n >= 9 && n <= 11) || (n >= 15 && n <= 30) ? "jpg" : "png";
+    return `gallery/gal-${n}.${ext}`;
+  }),
+];
+const galleryImages = await Promise.all(
+  gallerySources.map(async (src) => ({
+    src: (await getImage({ src: asset(src), width: 1600 })).src,
+    alt: "Photograph from a previous edition",
+  })),
+);
+
+// JSON-LD Event structured data — earns rich results in search.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: `${event.edition} — ${event.title}`,
+  startDate: event.isoDate,
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  location: {
+    "@type": "Place",
+    name: event.venue,
+    address: event.city,
+  },
+  organizer: { "@type": "Organization", name: site.name, url: site.url },
+  image: new URL(heroWebBanner.src, site.url).href,
+};
+---
+
+<Layout
+  title={`${event.title} ${event.date.split(",").pop()?.trim()}`}
+  description={site.description}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <!-- Hero -->
+  <HeroSlider slides={heroSlides} />
+
+  <!-- Featured Speakers -->
+  <section class="container-page py-20">
+    <SectionHeading title="Featured Speakers" />
+    <div class="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-4">
+      {speakers.map((s) => (
+        <SpeakerCard name={s.data.name} role={s.data.role} image={s.data.image} href={`/speakers/${s.id}`} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Magazines -->
+  <section class="bg-gray-50 py-20">
+    <div class="container-page">
+      <SectionHeading title="Explore Our Newest Magazines" />
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {magazines.map((m) => (
+          <div class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-100">
+            <Image
+              src={asset(m.data.cover)}
+              alt={m.data.title}
+              width={400}
+              height={520}
+              class="aspect-[3/4] w-full bg-gray-50 object-contain"
+            />
+            <div class="p-5 text-center">
+              <p class="font-semibold">{m.data.title}</p>
+              {m.data.downloadUrl && (
+                <a
+                  href={m.data.downloadUrl}
+                  target="_blank"
+                  rel="noopener"
+                  class="mt-3 inline-block rounded bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-black"
+                >
+                  Download
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="mt-10 text-center">
+        <a
+          href="/magazine"
+          class="inline-block rounded bg-brand px-6 py-3 text-sm font-semibold text-white transition hover:bg-black"
+        >
+          See All Magazines →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery (React island) -->
+  <section class="container-page py-20">
+    <SectionHeading title="Glimpse of Previous Edition" />
+    <Gallery client:visible images={galleryImages} />
+  </section>
+
+  <!-- Recent Blogs (temporarily disabled — re-enable by removing the `false &&` wrapper) -->
+  {false && (
+    <section class="bg-gray-50 py-20">
+      <div class="container-page">
+        <SectionHeading title="Recent Blogs" />
+        <div class="grid gap-8 md:grid-cols-3">
+          {posts.map((p) => (
+            <a href={`/blog/${p.id}`} class="group block overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-100">
+              <Image
+                src={p.data.cover}
+                alt={p.data.title}
+                width={500}
+                height={340}
+                class="aspect-[3/2] w-full object-cover transition duration-300 group-hover:scale-105"
+              />
+              <div class="p-5">
+                <span class="text-xs font-semibold uppercase tracking-wide text-accent">{p.data.category}</span>
+                <h3 class="mt-2 line-clamp-2 text-base font-semibold group-hover:text-accent">{p.data.title}</h3>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Sponsors -->
+  {sponsors.length > 0 && (
+    <section class="container-page py-20">
+      <SectionHeading title="Our Valued Sponsors" />
+      <div class="grid grid-cols-3 items-center gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7">
+        {sponsors.map((s) => {
+          const logo = (
+            <Image
+              src={asset(s.data.logo)}
+              alt={s.data.name}
+              width={300}
+              class="max-h-16 w-auto object-contain"
+            />
+          );
+          return s.data.url ? (
+            <a
+              href={s.data.url}
+              target="_blank"
+              rel="noopener"
+              class="flex items-center justify-center grayscale opacity-70 transition hover:grayscale-0 hover:opacity-100"
+              aria-label={s.data.name}
+            >
+              {logo}
+            </a>
+          ) : (
+            <div class="flex items-center justify-center grayscale opacity-70 transition hover:grayscale-0 hover:opacity-100">
+              {logo}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  )}
+</Layout>

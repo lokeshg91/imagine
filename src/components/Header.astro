@@ -1,0 +1,120 @@
+---
+import { Image } from "astro:assets";
+import { nav, cta, site } from "../data/site";
+import logo from "../assets/brand/logo.png";
+
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path.startsWith(href);
+---
+
+<header class="sticky top-0 z-50 border-b border-gray-100 bg-white">
+  <div class="container-page flex h-20 items-center justify-between gap-4">
+    <a href="/" class="flex items-center" aria-label={site.name}>
+      <Image src={logo} alt={site.name} class="h-[72px] w-auto" loading="eager" />
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-7 lg:flex" aria-label="Primary">
+      {
+        nav.map((item) =>
+          "children" in item && item.children ? (
+            <div class="group relative">
+              <button class="flex items-center gap-1 text-sm font-medium text-ink hover:text-accent">
+                {item.label}
+                <span aria-hidden="true">▾</span>
+              </button>
+              <ul class="invisible absolute left-0 top-full min-w-44 rounded-md border border-gray-100 bg-white py-2 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">
+                {item.children.map((child) => (
+                  <li>
+                    <a
+                      href={child.href}
+                      class="block px-4 py-2 text-sm text-ink hover:bg-gray-50 hover:text-accent"
+                    >
+                      {child.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <a
+              href={item.href}
+              class:list={[
+                "text-sm font-medium hover:text-accent",
+                isActive(item.href) ? "text-accent" : "text-ink",
+              ]}
+            >
+              {item.label}
+            </a>
+          ),
+        )
+      }
+      <a
+        href={cta.href}
+        class="rounded bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-black"
+      >
+        {cta.label}
+      </a>
+    </nav>
+
+    <!-- Mobile toggle (progressive enhancement, no framework needed) -->
+    <button
+      id="menu-toggle"
+      class="lg:hidden"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="block h-0.5 w-6 bg-brand"></span>
+      <span class="mt-1.5 block h-0.5 w-6 bg-brand"></span>
+      <span class="mt-1.5 block h-0.5 w-6 bg-brand"></span>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <nav
+    id="mobile-menu"
+    class="hidden border-t border-gray-100 bg-white lg:hidden"
+    aria-label="Mobile"
+  >
+    <ul class="container-page flex flex-col py-3">
+      {
+        nav.flatMap((item) =>
+          "children" in item && item.children
+            ? item.children.map((child) => (
+                <li>
+                  <a href={child.href} class="block py-2 text-ink hover:text-accent">
+                    {child.label}
+                  </a>
+                </li>
+              ))
+            : [
+                <li>
+                  <a href={item.href} class="block py-2 text-ink hover:text-accent">
+                    {item.label}
+                  </a>
+                </li>,
+              ],
+        )
+      }
+      <li class="pt-2">
+        <a
+          href={cta.href}
+          class="inline-block rounded bg-brand px-4 py-2 text-sm font-semibold text-white"
+        >
+          {cta.label}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById("menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+  toggle?.addEventListener("click", () => {
+    const open = menu?.classList.toggle("hidden") === false;
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+</script>

@@ -1,0 +1,22 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import PageTitle from "../components/PageTitle.astro";
+import SpeakerCard from "../components/SpeakerCard.astro";
+
+const team = (await getCollection("team")).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Layout title="Team" description="The team behind the Imagine Photojournalist Society.">
+  <PageTitle
+    title="Meet Our Team"
+    subtitle="Get to know the talented individuals behind our success."
+  />
+  <section class="container-page py-16">
+    <div class="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-4">
+      {team.map((member) => (
+        <SpeakerCard name={member.data.name} role={member.data.role ?? ""} image={member.data.image} />
+      ))}
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,27 @@
+---
+import { Image } from "astro:assets";
+import { asset } from "../lib/images";
+
+interface Props {
+  name: string;
+  role: string;
+  image: string;
+  href?: string;
+}
+const { name, role, image, href } = Astro.props;
+const Tag = href ? "a" : "article";
+---
+
+<Tag class="group block text-center" href={href}>
+  <div class="mx-auto aspect-square w-48 overflow-hidden rounded-full ring-4 ring-gray-100 sm:w-56">
+    <Image
+      src={asset(image)}
+      alt={`Portrait of ${name}`}
+      width={260}
+      height={260}
+      class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+    />
+  </div>
+  <h3 class="mt-5 text-lg font-semibold">{name}</h3>
+  <p class="mx-auto mt-1 max-w-xs text-sm text-muted">{role}</p>
+</Tag>

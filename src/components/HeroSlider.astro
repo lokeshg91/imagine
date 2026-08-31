@@ -1,0 +1,145 @@
+---
+// Dependency-free hero image slider. Crossfades a list of full-bleed images
+// with autoplay, dot navigation, and prev/next controls. No JS framework
+// needed — a small inline <script> handles the interaction.
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Slide {
+  image: ImageMetadata;
+  alt: string;
+  /** Optional name/caption shown in a bar at the bottom of this slide. */
+  caption?: string;
+}
+
+interface Props {
+  slides: Slide[];
+  /** Milliseconds between auto-advance. */
+  interval?: number;
+  class?: string;
+}
+
+const { slides, interval = 6000, class: className = "" } = Astro.props;
+---
+
+<div class={`hero-slider group relative overflow-hidden ${className}`} data-interval={interval}>
+  <div class="relative h-[78vh] min-h-[480px] w-full">
+    {slides.map((slide, i) => (
+      <div class="hero-slide absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out" data-index={i}>
+        <Image
+          src={slide.image}
+          alt={slide.alt}
+          widths={[640, 1024, 1500]}
+          sizes="100vw"
+          class="h-full w-full object-cover"
+          loading={i === 0 ? "eager" : "lazy"}
+          fetchpriority={i === 0 ? "high" : "low"}
+        />
+        {slide.caption && (
+          <div class="absolute inset-0 flex items-end pb-16 sm:pb-20">
+            <div class="container-page flex justify-start">
+              <p class="inline-block rounded-md bg-black/40 px-6 py-3 text-4xl font-semibold text-white backdrop-blur-sm sm:text-5xl">
+                {slide.caption}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+
+  <div class="absolute inset-0 flex items-center">
+    <div class="container-page text-white">
+      <slot />
+    </div>
+  </div>
+
+  {slides.length > 1 && (
+    <>
+      <button
+        type="button"
+        class="hero-prev absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white opacity-0 transition-opacity duration-300 hover:bg-black/50 focus-visible:opacity-100 group-hover:opacity-100"
+        aria-label="Previous slide"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-6 w-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="hero-next absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white opacity-0 transition-opacity duration-300 hover:bg-black/50 focus-visible:opacity-100 group-hover:opacity-100"
+        aria-label="Next slide"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-6 w-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      <div class="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-2">
+        {slides.map((_, i) => (
+          <button
+            type="button"
+            class="hero-dot h-2.5 w-2.5 rounded-full bg-white/50 transition-colors data-[active=true]:bg-white"
+            data-index={i}
+            data-active={i === 0}
+            aria-label={`Go to slide ${i + 1}`}
+          />
+        ))}
+      </div>
+    </>
+  )}
+</div>
+
+<script>
+  class HeroSliderController {
+    root: HTMLElement;
+    slides: HTMLElement[];
+    dots: HTMLButtonElement[];
+    current = 0;
+    timer: ReturnType<typeof setInterval> | null = null;
+    interval: number;
+
+    constructor(root: HTMLElement) {
+      this.root = root;
+      this.slides = Array.from(root.querySelectorAll<HTMLElement>(".hero-slide"));
+      this.dots = Array.from(root.querySelectorAll<HTMLButtonElement>(".hero-dot"));
+      this.interval = Number(root.dataset.interval) || 6000;
+
+      this.slides[0]?.classList.add("opacity-100");
+
+      root.querySelector(".hero-prev")?.addEventListener("click", () => this.go(this.current - 1));
+      root.querySelector(".hero-next")?.addEventListener("click", () => this.go(this.current + 1));
+      this.dots.forEach((dot) => dot.addEventListener("click", () => this.go(Number(dot.dataset.index))));
+
+      root.addEventListener("mouseenter", () => this.stop());
+      root.addEventListener("mouseleave", () => this.start());
+
+      if (this.slides.length > 1) this.start();
+    }
+
+    go(index: number) {
+      const next = (index + this.slides.length) % this.slides.length;
+      if (next === this.current) return;
+      this.slides[this.current].classList.remove("opacity-100");
+      this.slides[this.current].classList.add("opacity-0");
+      this.slides[next].classList.remove("opacity-0");
+      this.slides[next].classList.add("opacity-100");
+      this.dots[this.current]?.setAttribute("data-active", "false");
+      this.dots[next]?.setAttribute("data-active", "true");
+      this.current = next;
+    }
+
+    start() {
+      if (this.slides.length < 2) return;
+      this.stop();
+      this.timer = setInterval(() => this.go(this.current + 1), this.interval);
+    }
+
+    stop() {
+      if (this.timer) clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>(".hero-slider").forEach((root) => new HeroSliderController(root));
+</script>

@@ -1,0 +1,77 @@
+---
+import { getCollection, render } from "astro:content";
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import PageTitle from "../../components/PageTitle.astro";
+import { asset } from "../../lib/images";
+
+export async function getStaticPaths() {
+  const speakers = (await getCollection("speakers")).sort((a, b) => a.data.order - b.data.order);
+  return speakers.map((speaker, i) => ({
+    params: { slug: speaker.id },
+    props: {
+      speaker,
+      // Wrap around — there's no meaningful "first/last" speaker, so
+      // clicking through never hits a dead end.
+      prev: speakers[(i - 1 + speakers.length) % speakers.length],
+      next: speakers[(i + 1) % speakers.length],
+    },
+  }));
+}
+
+const { speaker, prev, next } = Astro.props;
+const { name, role, image, bio } = speaker.data;
+const bioParagraphs = bio ? bio.split("\n\n") : [];
+---
+
+<Layout title={name} description={role}>
+  <PageTitle title={name} subtitle={role} image={asset(image)} />
+  <section class="container-page max-w-3xl py-16">
+    {bioParagraphs.length > 0 ? (
+      <div class="space-y-4 text-ink/80">
+        {bioParagraphs.map((p) => <p>{p}</p>)}
+      </div>
+    ) : (
+      <p class="text-center text-muted">Biography coming soon.</p>
+    )}
+
+    <p class="mt-10 text-center">
+      <a href="/speakers" class="text-sm font-semibold text-accent hover:underline">← Back to all speakers</a>
+    </p>
+
+    <div class="mt-8 flex items-center justify-between gap-4 border-t border-gray-100 pt-8">
+      <a href={`/speakers/${prev.id}`} class="group flex items-center gap-3 text-ink hover:text-accent">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4 flex-none">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <Image
+          src={asset(prev.data.image)}
+          alt={`Portrait of ${prev.data.name}`}
+          width={120}
+          height={120}
+          class="h-14 w-14 flex-none rounded-full object-cover ring-2 ring-gray-100 transition group-hover:ring-accent sm:h-16 sm:w-16"
+        />
+        <span class="hidden text-left sm:block">
+          <span class="block text-xs text-muted">Previous</span>
+          <span class="block text-sm font-semibold">{prev.data.name}</span>
+        </span>
+      </a>
+      <a href={`/speakers/${next.id}`} class="group flex items-center gap-3 text-ink hover:text-accent">
+        <span class="hidden text-right sm:block">
+          <span class="block text-xs text-muted">Next</span>
+          <span class="block text-sm font-semibold">{next.data.name}</span>
+        </span>
+        <Image
+          src={asset(next.data.image)}
+          alt={`Portrait of ${next.data.name}`}
+          width={120}
+          height={120}
+          class="h-14 w-14 flex-none rounded-full object-cover ring-2 ring-gray-100 transition group-hover:ring-accent sm:h-16 sm:w-16"
+        />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4 flex-none">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+  </section>
+</Layout>

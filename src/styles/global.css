@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Design tokens — Tailwind v4 @theme.
+   Adjust brand colors here; they become utilities like bg-brand, text-accent. */
+@theme {
+  --color-brand: #111111;
+  --color-accent: #000000;
+  --color-ink: #1a1a1a;
+  --color-muted: #6b7280;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Oswald", "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-white text-ink font-sans antialiased;
+  }
+  /* Oswald is a bold condensed display face — great for large headlines,
+     but its tight condensed letterforms get harder to read at card-title
+     sizes (speaker names, blog titles). Reserve it for h1/h2; let h3/h4
+     fall back to the regular sans for clarity at small sizes. */
+  h1, h2 {
+    @apply font-display tracking-tight text-brand;
+  }
+  h3, h4 {
+    @apply font-sans tracking-tight text-brand;
+  }
+}
+
+@layer components {
+  /* Reusable content container.
+     Change the max-width here to widen/narrow the whole site at once.
+     Common values: max-w-6xl (1152px) · max-w-7xl (1280px) · max-w-[1440px].
+     Kept inside @layer components so a plain Tailwind utility (e.g.
+     max-w-[600px] on a specific section) can still override it — unlayered
+     CSS always wins over layered CSS regardless of source order, which
+     silently defeated per-page width overrides before this was layered. */
+  .container-page {
+    @apply mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10;
+  }
+}

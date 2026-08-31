@@ -1,0 +1,35 @@
+---
+// Centered title section for inner pages — matches the "Who We Are" page
+// style on the live site: light background, centered heading with a short
+// accent underline, generous vertical spacing. Sits right below the sticky
+// header and renders the page's single <h1>. The homepage doesn't use this;
+// it has its own hero slider instead.
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  /** Optional avatar shown above the title, e.g. a speaker's portrait. */
+  image?: ImageMetadata;
+}
+
+const { title, subtitle, image } = Astro.props;
+---
+
+<div class="border-b border-gray-100 bg-[#e1f0fc] py-14 sm:py-20">
+  <div class="container-page text-center">
+    {image && (
+      <Image
+        src={image}
+        alt={title}
+        width={140}
+        height={140}
+        class="mx-auto mb-5 h-24 w-24 rounded-full object-cover ring-4 ring-white sm:h-28 sm:w-28"
+      />
+    )}
+    <h1 class="font-display text-4xl font-medium tracking-tight text-brand sm:text-5xl">{title}</h1>
+    <span class="mx-auto mt-4 block h-1 w-16 rounded bg-accent"></span>
+    {subtitle && <p class="mx-auto mt-4 max-w-xl text-black">{subtitle}</p>}
+  </div>
+</div>

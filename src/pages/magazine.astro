@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import PageTitle from "../components/PageTitle.astro";
+import { asset } from "../lib/images";
+
+const magazines = (await getCollection("magazines")).sort(
+  (a, b) => +new Date(b.data.publishedDate) - +new Date(a.data.publishedDate),
+);
+---
+
+<Layout title="Magazine" description="Download past issues of our photojournalism magazine.">
+  <PageTitle
+    title="Stay Inspired with Jeene Ka Andaaz Magazine"
+    subtitle="Explore our latest magazine editions, featuring insightful articles, industry trends, and expert opinions."
+  />
+  <section class="container-page py-16">
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {magazines.map((m) => (
+        <div class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-100">
+          <Image
+            src={asset(m.data.cover)}
+            alt={m.data.title}
+            width={400}
+            height={520}
+            class="aspect-[3/4] w-full object-cover"
+          />
+          <div class="p-5 text-center">
+            <p class="text-sm font-semibold">{m.data.title}</p>
+            {m.data.downloadUrl && (
+              <a
+                href={m.data.downloadUrl}
+                target="_blank"
+                rel="noopener"
+                class="mt-3 inline-block rounded bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-black"
+              >
+                Download
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</Layout>

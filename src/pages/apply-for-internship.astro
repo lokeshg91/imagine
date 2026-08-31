@@ -1,0 +1,15 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageTitle from "../components/PageTitle.astro";
+import InternshipForm from "../components/InternshipForm.tsx";
+---
+
+<Layout title="Apply for Internship" description="Apply to intern with the Imagine Photojournalist Society.">
+  <PageTitle
+    title="Enhance your skills and work with experts"
+    subtitle="Start your journey with us now!"
+  />
+  <section class="container-page max-w-[992px] py-16">
+    <InternshipForm client:load action="https://formspree.io/f/mjyvgyde" />
+  </section>
+</Layout>

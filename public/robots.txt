@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://imaginephotojournalists.com/sitemap-index.xml

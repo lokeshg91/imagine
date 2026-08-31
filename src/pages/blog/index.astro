@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import PageTitle from "../../components/PageTitle.astro";
+
+const posts = (await getCollection("blog"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => +b.data.publishedDate - +a.data.publishedDate);
+---
+
+<Layout title="Blog" description="Stories, essays and dispatches on photojournalism.">
+  <PageTitle title="Blog" />
+  <section class="container-page py-16">
+    <div class="grid gap-8 md:grid-cols-3">
+      {posts.map((p) => (
+        <a href={`/blog/${p.id}`} class="group block overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-100">
+          <Image
+            src={p.data.cover}
+            alt={p.data.title}
+            width={500}
+            height={340}
+            class="aspect-[3/2] w-full object-cover transition duration-300 group-hover:scale-105"
+          />
+          <div class="p-5">
+            <span class="text-xs font-semibold uppercase tracking-wide text-accent">{p.data.category}</span>
+            <h3 class="mt-2 line-clamp-3 text-base font-semibold group-hover:text-accent">{p.data.title}</h3>
+            <p class="mt-2 text-xs text-muted">
+              {p.data.publishedDate.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+            </p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>

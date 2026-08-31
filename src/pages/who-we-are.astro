@@ -1,0 +1,114 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import PageTitle from "../components/PageTitle.astro";
+import aboutImage from "../assets/about/about-1.png";
+
+const contributors = [
+  ["Mr. Siddharth Varadarajan", "Indian-American journalist, founder & editor, The Wire"],
+  ["Mr. Vipul Mudgal", "Activist, veteran journalist and chairman, iam4change"],
+  ["Mr. Bandeep Singh", "Group photo editor, India Today"],
+  ["Mr. M.K. Venu", "Founder of The Wire & former editor, The Hindu"],
+  ["Mr. Prashant Panjiar", "World Press Photo"],
+  ["Mr. Rohit Parihar", "Sr. editor, India Today"],
+  ["Mr. Narendra Bisht", "Photo editor, Outlook"],
+  ["Ms. Dharmendra Kanwar", "Renowned travel writer"],
+  ["Mr. Himanshu Joshi", "Editor and publisher, Terrascape"],
+  ["Mr. Tashi Tobyal", "Photojournalist, Indian Express"],
+  ["Mr. Pramod Pushkarna", "Renowned war photographer, National Herald"],
+  ["Mr. Satish Pednekar", "Journalist"],
+  ["Mr. Aditya Arya", "Photographer"],
+  ["Mr. Umesh Gogna", "Travel photographer"],
+  ["Prof. (Dr.) Sandeep Sancheti", "Group vice chancellor, SRM University"],
+  ["Prof. (Dr.) Sachin Batra", "Sr. journalist and professor"],
+  ["Mr. Shailesh Rawal", "Photojournalist, India Today"],
+  ["Mr. Sandeep Purohit", "Editor, Rajasthan Patrika"],
+  ["Mr. Mahesh Sharma", "State editor, Dainik Navjyoti"],
+];
+---
+
+<Layout title="Who We Are" description="About the Imagine Photojournalist Society.">
+  <PageTitle
+    title="About Imagine Photojournalist Society"
+    subtitle="We empower professionals and learners with skill-based training and a platform for knowledge exchange."
+  />
+  <section class="container-page py-16">
+    <div class="space-y-4 text-ink/80">
+      <p>
+        Imagine Photojournalist Society was founded in 2012 with the objective
+        of building photojournalism and photography skills among people
+        around the globe — created with the aim of spreading photojournalism
+        literacy among professionals and learners.
+      </p>
+      <p>
+        The Hon'ble Governor of Rajasthan, Ms. Margaret Alva, launched the
+        Society's flag on September 25, 2012. That was the day a movement
+        began — a better platform for learning, exchanging experiences,
+        analyzing research, tracking trends, and running skill-based value
+        education and training programs.
+      </p>
+      <p>
+        The Society's activities include photography exhibitions,
+        professional training camps, skill-oriented workshops for students
+        and professionals, and research programs. The Photojournalism Seminar
+        was launched in 2015, making Imagine Photojournalist Society the only
+        organization in Asia to hold a yearly national as well as
+        international seminar — the Jaipur Photojournalism Seminar — with the
+        active support of acclaimed industry professionals who have made a
+        mark both in the country and around the world.
+      </p>
+
+      <Image
+        src={aboutImage}
+        alt="Imagine Photojournalist Society"
+        width={1030}
+        height={469}
+        class="my-10 w-full rounded-lg"
+      />
+
+      <h3 class="!mt-8 text-xl font-bold text-brand">
+        Contributors to this journey of photojournalism literacy include:
+      </h3>
+      <ul class="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+        {contributors.map(([name, role]) => (
+          <li class="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              class="h-4 w-4 flex-none text-accent"
+              aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+            <span>
+              <span class="block font-semibold text-brand">{name}</span>
+              <span class="block text-sm text-muted">{role}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <p>
+        The Society's chairperson,
+        <strong class="text-brand">Mr. Purushottam Diwakar (senior photojournalist, India Today)</strong>,
+        is its founder. He holds the distinction of mainstream photojournalism
+        work and international assignments across
+        <strong class="text-brand">Africa, Thailand and Dubai.</strong>
+        His photographs have appeared on magazine covers and been appreciated
+        the world over. He has trained many professionals, students, and
+        learners — most notably
+        through "Camera Commando," a field-reporting training program for
+        young women that is widely cited as a milestone in a male-dominated
+        field: over 45 days, in extreme conditions, the group travelled
+        roughly 5,000 kilometers across India to produce a rare body of work.
+      </p>
+      <p class="italic text-muted">
+        Thus the Imagine Photojournalist Society's journey of Photojournalism
+        Literacy is still on……
+      </p>
+    </div>
+  </section>
+</Layout>

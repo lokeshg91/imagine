@@ -1,0 +1,52 @@
+---
+import { site, event, nav } from "../data/site";
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-gray-100 bg-brand text-white">
+  <div class="container-page grid gap-10 py-14 md:grid-cols-3">
+    <div>
+      <p class="font-display text-xl">{site.name}</p>
+      <p class="mt-3 max-w-xs text-sm text-white/70">{site.description}</p>
+    </div>
+
+    <div>
+      <p class="font-display text-sm uppercase tracking-wide text-white/60">Explore</p>
+      <ul class="mt-4 space-y-2 text-sm">
+        {nav.map((item) => (
+          <li>
+            <a
+              href={item.href === "#" && "children" in item ? item.children[0].href : item.href}
+              class="text-white/80 hover:text-white"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <p class="font-display text-sm uppercase tracking-wide text-white/60">Next Edition</p>
+      <p class="mt-4 text-sm text-white/80">{event.edition} — {event.title}</p>
+      <p class="text-sm text-white/80">{event.date}</p>
+      <p class="text-sm text-white/80">{event.venue}</p>
+      <a href={`mailto:${site.email}`} class="mt-4 inline-block text-sm text-white hover:underline">
+        {site.email}
+      </a>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="container-page py-5 text-center text-xs text-white/50">
+      © <span id="footer-year">{year}</span> {site.name}. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // The site builds statically, so the year above is baked in at build time.
+  // Correct it on the client so it's always accurate even between rebuilds.
+  const el = document.getElementById("footer-year");
+  if (el) el.textContent = String(new Date().getFullYear());
+</script>

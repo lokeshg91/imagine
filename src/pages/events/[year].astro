@@ -1,0 +1,120 @@
+---
+// Per-edition photo gallery. Drop images into
+// src/assets/events/gallery-<year>/ and a page is generated automatically —
+// no other wiring needed.
+import { Image, getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import Layout from "../../layouts/Layout.astro";
+import PageTitle from "../../components/PageTitle.astro";
+import GalleryGrid from "../../components/GalleryGrid.tsx";
+import { event } from "../../data/site";
+
+const galleryModules = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/events/gallery-*/*.{png,jpg,jpeg,webp}",
+  { eager: true },
+);
+
+const galleriesByYear: Record<string, ImageMetadata[]> = {};
+for (const [path, mod] of Object.entries(galleryModules)) {
+  const match = path.match(/gallery-(\d{4})/);
+  if (!match) continue;
+  (galleriesByYear[match[1]] ??= []).push(mod.default);
+}
+
+// Edition cover photos — src/assets/events/edition-<year>.{png,jpg} — used
+// as the thumbnail in the prev/next nav below.
+const coverModules = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/events/edition-*.{png,jpg,jpeg,webp}",
+  { eager: true },
+);
+const coverByYear: Record<string, ImageMetadata> = {};
+for (const [path, mod] of Object.entries(coverModules)) {
+  const match = path.match(/edition-(\d{4})/);
+  if (match) coverByYear[match[1]] = mod.default;
+}
+
+export function getStaticPaths() {
+  const galleryModules = import.meta.glob("/src/assets/events/gallery-*/*.{png,jpg,jpeg,webp}", { eager: true });
+  const years = new Set<string>();
+  for (const path of Object.keys(galleryModules)) {
+    const match = path.match(/gallery-(\d{4})/);
+    if (match) years.add(match[1]);
+  }
+  return Array.from(years).map((year) => ({ params: { year } }));
+}
+
+const { year } = Astro.params;
+const images = galleriesByYear[year!] ?? [];
+
+// Newest-first order, matching the "Past Editions" list on /events.
+const sortedYears = Object.keys(galleriesByYear).sort((a, b) => Number(b) - Number(a));
+const currentIndex = sortedYears.indexOf(year!);
+const prevYear = currentIndex < sortedYears.length - 1 ? sortedYears[currentIndex + 1] : null; // older
+const nextYear = currentIndex > 0 ? sortedYears[currentIndex - 1] : null; // newer
+
+const galleryImages = await Promise.all(
+  images.map(async (image, i) => ({
+    src: (await getImage({ src: image, width: 1400 })).src,
+    alt: `${event.title} — Edition ${year}, photo ${i + 1}`,
+  })),
+);
+---
+
+<Layout
+  title={`Imagine Photojournalism Seminar Edition-${year}`}
+  description={`Photos from the ${event.title}, Edition ${year}.`}
+>
+  <PageTitle title={`Imagine Photojournalism Seminar Edition-${year}`} subtitle="A look back at this edition in photos." />
+  <section class="container-page py-16">
+    <GalleryGrid client:visible images={galleryImages} />
+
+    <p class="mt-10 text-center">
+      <a href="/events" class="text-sm font-semibold text-accent hover:underline">← Back to all editions</a>
+    </p>
+
+    {(prevYear || nextYear) && (
+      <div class="mt-8 flex items-center justify-between gap-4 border-t border-gray-100 pt-8">
+        {prevYear ? (
+          <a href={`/events/${prevYear}`} class="group flex items-center gap-3 text-ink hover:text-accent">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4 flex-none">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            {coverByYear[prevYear] && (
+              <Image
+                src={coverByYear[prevYear]}
+                alt={`Edition ${prevYear} cover`}
+                width={120}
+                height={120}
+                class="h-14 w-14 flex-none rounded-full object-cover ring-2 ring-gray-100 transition group-hover:ring-accent sm:h-16 sm:w-16"
+              />
+            )}
+            <span class="hidden text-left sm:block">
+              <span class="block text-xs text-muted">Previous</span>
+              <span class="block text-sm font-semibold">Edition {prevYear}</span>
+            </span>
+          </a>
+        ) : <span />}
+        {nextYear ? (
+          <a href={`/events/${nextYear}`} class="group flex items-center gap-3 text-ink hover:text-accent">
+            <span class="hidden text-right sm:block">
+              <span class="block text-xs text-muted">Next</span>
+              <span class="block text-sm font-semibold">Edition {nextYear}</span>
+            </span>
+            {coverByYear[nextYear] && (
+              <Image
+                src={coverByYear[nextYear]}
+                alt={`Edition ${nextYear} cover`}
+                width={120}
+                height={120}
+                class="h-14 w-14 flex-none rounded-full object-cover ring-2 ring-gray-100 transition group-hover:ring-accent sm:h-16 sm:w-16"
+              />
+            )}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4 flex-none">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        ) : <span />}
+      </div>
+    )}
+  </section>
+</Layout>

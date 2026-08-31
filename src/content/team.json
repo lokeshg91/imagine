@@ -1,0 +1,18 @@
+[
+  { "id": "purushottam-diwakar", "name": "Purushottam Diwakar", "role": "Photojournalist, India Today", "image": "team/Purushottam-Diwakar-1.png", "order": 1 },
+  { "id": "gajendra-prasad-diwakar", "name": "Dr. Gajendra Prasad Diwakar", "role": "Director, Diwakar Education Society, Jodhpur", "image": "team/Dr.-Gajendra-Prasad-Diwakar.png", "order": 2 },
+  { "id": "hemjeet-maloo", "name": "Hemjeet Maloo", "role": "Director, Veena Music", "image": "team/Hemjeet-Maloo.png", "order": 3 },
+  { "id": "ajay-chopra", "name": "Ajay Chopra", "role": "Owner, Crayons Communication Group", "image": "team/Ajay-Chopra.png", "order": 4 },
+  { "id": "rohit-parihar", "name": "Rohit Parihar", "role": "Assistant Editor, India Today", "image": "team/Rohit-Parihar-1.png", "order": 5 },
+  { "id": "leela-diwakar", "name": "Leela Diwakar", "role": "Vice President, Imagine Photojournalist Society", "image": "team/Leela-Diwakar.png", "order": 6 },
+  { "id": "himanshu-joshi", "name": "Himanshu Joshi", "role": "Advisor", "image": "team/Himanshu-Joshi.jpg", "order": 7 },
+  { "id": "ayodhya-prasad-gaur", "name": "Ayodhya Prasad Gaur", "role": "DGM, Corporate Affairs & Communications, Cairn India", "image": "team/Ayodhya-Prasad-Gaur-1.png", "order": 8 },
+  { "id": "manu-solanki", "name": "Manu Solanki", "role": "Creative Head", "image": "team/Manu-Solanki.png", "order": 9 },
+  { "id": "nitin-jagad", "name": "Nitin Jagad", "role": "Advisor", "image": "team/Nitin-Jagad.jpg", "order": 10 },
+  { "id": "lokesh-gurjar", "name": "Lokesh Gurjar", "role": "IT & Digital Advisor", "image": "team/Lokesh.jpg", "order": 11 },
+  { "id": "ravindra-rawat", "name": "Ravindra Rawat", "image": "team/Ravindra-Rawat.png", "order": 12 },
+  { "id": "abhishek-diwakar", "name": "Abhishek Diwakar", "image": "team/Abhishek-Diwakar.png", "order": 13 },
+  { "id": "rajesh-jobanputra", "name": "Rajesh Jobanputra", "role": "Photojournalist", "image": "team/Rajesh-Jobanputra.png", "order": 14 },
+  { "id": "arvind-sharma", "name": "Arvind Sharma", "role": "Photojournalist", "image": "team/Arvind-Sharma.png", "order": 15 },
+  { "id": "padam-saini", "name": "Padam Saini", "role": "Photojournalist", "image": "team/Padam-Saini.png", "order": 16 }
+]

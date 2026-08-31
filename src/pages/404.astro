@@ -1,0 +1,14 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Page Not Found" noindex={true}>
+  <section class="container-page flex min-h-[50vh] flex-col items-center justify-center py-24 text-center">
+    <p class="font-display text-6xl font-bold text-accent">404</p>
+    <h1 class="mt-4 text-2xl font-bold">Page not found</h1>
+    <p class="mt-2 text-muted">The page you're looking for doesn't exist or has moved.</p>
+    <a href="/" class="mt-6 rounded bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-black">
+      Back to Home
+    </a>
+  </section>
+</Layout>

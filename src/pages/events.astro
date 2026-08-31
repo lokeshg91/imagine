@@ -1,0 +1,107 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import PageTitle from "../components/PageTitle.astro";
+import { event } from "../data/site";
+
+import edition2024 from "../assets/events/edition-2024.png";
+import eventCardBg from "../assets/events/2026.jpg";
+import edition2023 from "../assets/events/edition-2023.png";
+import edition2022 from "../assets/events/edition-2022.png";
+import edition2021 from "../assets/events/edition-2021.jpg";
+import edition2020 from "../assets/events/edition-2020.jpg";
+import edition2019 from "../assets/events/edition-2019.png";
+import edition2018 from "../assets/events/edition-2018.png";
+import edition2017 from "../assets/events/edition-2017.jpg";
+import edition2016 from "../assets/events/edition-2016.png";
+import edition2015 from "../assets/events/edition-2015.png";
+
+const pastEditions = [
+  { year: "2024", image: edition2024 },
+  { year: "2023", image: edition2023 },
+  { year: "2022", image: edition2022 },
+  { year: "2021", image: edition2021 },
+  { year: "2020", image: edition2020 },
+  { year: "2019", image: edition2019 },
+  { year: "2018", image: edition2018 },
+  { year: "2017", image: edition2017 },
+  { year: "2016", image: edition2016 },
+  { year: "2015", image: edition2015 },
+];
+
+// Years with an actual photo gallery under src/assets/events/gallery-<year>/.
+// Add more here as galleries are added — the page at /events/<year> is
+// generated automatically once the folder exists.
+const yearsWithGallery = new Set([
+  "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015",
+]);
+---
+
+<Layout title="Events" description="Upcoming and past editions of the Jaipur Photojournalism Seminar.">
+  <PageTitle
+    title="Capturing Memorable Moments"
+    subtitle="Explore memorable moments from our events in this gallery, capturing the excitement and highlights of each occasion!"
+  />
+  <section class="container-page py-16">
+    <div class="relative mx-auto max-w-3xl overflow-hidden rounded-xl text-white shadow-lg">
+      <Image
+        src={eventCardBg}
+        alt=""
+        width={1200}
+        class="absolute inset-0 h-full w-full object-cover"
+        aria-hidden="true"
+      />
+      <div class="absolute inset-0 bg-brand/50"></div>
+      <div class="relative flex flex-col items-center gap-8 p-8 text-center sm:p-12 lg:flex-row lg:items-center lg:justify-between lg:text-left">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-white">{event.edition} · Upcoming</p>
+          <h2 class="mt-3 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">{event.title}</h2>
+          <div class="mt-5 flex flex-col gap-2 text-white sm:flex-row sm:gap-6">
+            <p class="flex items-center justify-center gap-2 lg:justify-start">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5 flex-none text-white">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <path stroke-linecap="round" d="M16 2v4M8 2v4M3 10h18" />
+              </svg>
+              {event.date}
+            </p>
+            <p class="flex items-center justify-center gap-2 lg:justify-start">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5 flex-none text-white">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+              {event.venue}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="mt-16 text-center text-2xl font-bold text-brand">Past Editions</h3>
+    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {pastEditions.map((ed) => {
+        const hasGallery = yearsWithGallery.has(ed.year);
+        const card = (
+          <>
+            <Image
+              src={ed.image}
+              alt={`Imagine Photojournalist Society — Edition ${ed.year}`}
+              width={495}
+              class="aspect-[5/4] w-full object-cover transition duration-300 group-hover:scale-105"
+            />
+            <p class="p-4 text-center font-semibold">Edition {ed.year}</p>
+          </>
+        );
+        return hasGallery ? (
+          <a
+            href={`/events/${ed.year}`}
+            class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-100 transition hover:ring-accent"
+          >
+            {card}
+          </a>
+        ) : (
+          <div class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-100">{card}</div>
+        );
+      })}
+    </div>
+  </section>
+</Layout>
